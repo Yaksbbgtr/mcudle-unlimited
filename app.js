@@ -47,7 +47,7 @@ function fuzzyCompareArray(a, b) {
   return matching === 0 ? "None" : matching === big.length ? "Full" : "Partial";
 }
 
-const TITLES = new Set(["mr.", "mrs.", "madam", "monsieur", "sir", "professor", "sr.", "jr.", "aunt"]);
+const TITLES = new Set(["mr.", "mrs.", "madam", "monsieur", "sir", "professor", "sr.", "jr.", "aunt", "the"]);
 function compareName(a, b) {
   const norm = (n) => n.map((p) => p.replaceAll(/[()]/g, "")).filter((p) => !TITLES.has(p.toLowerCase()));
   return fuzzyCompareArray(norm(a), norm(b));
