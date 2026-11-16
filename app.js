@@ -24,8 +24,8 @@ function prepare(c, id, extra = {}) {
     ...c,
     ...extra,
     id,
-    display: c.name.join(" ").replaceAll(/[()]/g, ""),
-    plain: clean(c.name.join(" ").replaceAll(/[()]/g, "")),
+    display: c.name.join(" "),
+    plain: clean(c.name.join(" ")),
     series: bookTitle(c.book),
   };
 }
@@ -51,8 +51,10 @@ function fuzzyCompareArray(a, b) {
   return matching === 0 ? "None" : matching === big.length ? "Full" : "Partial";
 }
 
+// Titles like "Mr." or "Sr." don't count as a shared name.
+const TITLES = new Set(["mr.", "mrs.", "madam", "monsieur", "sir", "professor", "sr.", "jr.", "aunt"]);
 function compareName(a, b) {
-  const norm = (n) => n.map((p) => p.replaceAll(/[()]/g, ""));
+  const norm = (n) => n.map((p) => p.replaceAll(/[()]/g, "")).filter((p) => !TITLES.has(p.toLowerCase()));
   return fuzzyCompareArray(norm(a), norm(b));
 }
 
