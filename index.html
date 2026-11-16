@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f6f0e1" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0f1424" media="(prefers-color-scheme: dark)">
-  <title>Potterdle Unlimited</title>
+  <meta name="theme-color" content="#f4f4f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121318" media="(prefers-color-scheme: dark)">
+  <title>MCU-dle Unlimited</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Potterdle">
+  <meta name="apple-mobile-web-app-title" content="MCU-dle">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap">
-  <link rel="stylesheet" href="style.css?v=2026111605">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Bebas+Neue&display=swap">
+  <link rel="stylesheet" href="style.css?v=2026111701">
 </head>
 <body>
   <header class="top">
@@ -25,7 +25,7 @@
       </button>
     </div>
     <div class="brand">
-      <h1>Potterdle</h1>
+      <h1>MCU-dle</h1>
       <p class="tag">Unlimited</p>
     </div>
     <div class="top-right">
@@ -49,7 +49,7 @@
     <section class="guess-box">
       <div class="combo">
         <input id="guess-input" type="text" autocomplete="off" spellcheck="false"
-               placeholder="Guess a Harry Potter character…" aria-label="Guess a character"
+               placeholder="Guess an MCU character…" aria-label="Guess a character"
                role="combobox" aria-expanded="false" aria-controls="suggestions" aria-autocomplete="list">
         <ul id="suggestions" role="listbox" hidden></ul>
       </div>
@@ -61,7 +61,7 @@
 
     <section class="board" aria-label="Your guesses">
       <div class="board-head">
-        <span>Character</span><span>House</span><span>First book</span><span>Blood status</span><span>Affiliation</span><span>Family</span>
+        <span>Character</span><span>Debut</span><span>Phase</span><span>Affiliation</span><span>Species</span><span>Gender</span><span>Role</span><span>Status</span>
       </div>
       <div id="rows"></div>
       <p class="empty" id="empty">Pick any character to start. Each guess shows how close you are.</p>
@@ -72,16 +72,16 @@
   <dialog id="dlg-help">
     <form method="dialog" class="dlg">
       <h2>How to play</h2>
-      <p>A random character from the Harry Potter books has been chosen. Guess anyone, and each column tells you how close you are. Play as many rounds as you like.</p>
+      <p>A random character from the Marvel Cinematic Universe (films and Disney+ shows) has been chosen. Guess anyone, and each column tells you how close you are. Play as many rounds as you like.</p>
       <ul class="legend">
         <li><span class="sw full"></span><b>Match.</b> That attribute is exactly right.</li>
-        <li><span class="sw partial"></span><b>Close.</b> Some overlap: a shared name, affiliation or family, or the same species but a different blood status.</li>
-        <li><span class="sw none"></span><b>Miss.</b> Nothing in common. On a missed first book, ▲ means the answer first appears later and ▼ earlier.</li>
+        <li><span class="sw partial"></span><b>Close.</b> Some overlap: a shared name or affiliation, or the same species but a different subtype.</li>
+        <li><span class="sw none"></span><b>Miss.</b> Nothing in common. On a missed debut or phase, ▲ means the answer debuted later and ▼ earlier.</li>
       </ul>
-      <p class="muted small">First book is where a character first appears in person (memories count). Characters who are only ever mentioned use the book they're first named in.</p>
+      <p class="muted small">Debut is the first film or show a character appears in. Status is as of their latest appearance.</p>
       <ul class="legend" hidden>
       </ul>
-      <p class="muted">Tip: in Settings you can pick which books the mystery character can first appear in, so you avoid spoilers for books you haven't read.</p>
+      <p class="muted">Tip: in Settings you can pick which phases the mystery character can debut in, so you avoid spoilers for books you haven't read.</p>
       <button class="btn primary" value="close">Got it</button>
     </form>
   </dialog>
@@ -92,7 +92,7 @@
       <h2>Settings</h2>
       <h3>Mystery character comes from</h3>
       <div id="series-list" class="checks"></div>
-      <p class="muted small">You can still guess any character. This only limits who the answer can be. If the current character is from a book you turn off, you get a new one when you close Settings.</p>
+      <p class="muted small">You can still guess any character. This only limits who the answer can be. If the current character is from a phase you turn off, you get a new one when you close Settings.</p>
       <h3>Display</h3>
       <label class="switch"><span>Theme</span><select id="opt-theme"><option value="system">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
       <label class="switch"><span>High-contrast colors</span><input type="checkbox" id="opt-cb"></label>
@@ -107,7 +107,7 @@
       <div id="sync-off">
         <p class="small muted">Keep your stats, added characters, settings and current round the same on every browser. Your data is saved in a private gist on your GitHub account.</p>
         <ol class="small steps">
-          <li><a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Potterdle%20sync" target="_blank" rel="noopener">Create a GitHub token</a> with only the <b>gist</b> box ticked. Set Expiration to “No expiration” so it keeps working.</li>
+          <li><a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=MCU-dle%20sync" target="_blank" rel="noopener">Create a GitHub token</a> with only the <b>gist</b> box ticked. Set Expiration to “No expiration” so it keeps working.</li>
           <li>Paste it below. Do this once on each device.</li>
         </ol>
         <div class="url-row">
@@ -160,7 +160,8 @@
     </form>
   </dialog>
 
-  <script src="characters.js?v=2026111605"></script>
-  <script src="app.js?v=2026111605"></script>
+  <script src="releases.js?v=2026111701"></script>
+  <script src="characters.js?v=2026111701"></script>
+  <script src="app.js?v=2026111701"></script>
 </body>
 </html>

@@ -1,39 +1,35 @@
 "use strict";
 
 /* =========================================================
- * Potterdle Unlimited
+ * MCU-dle Unlimited
  * Game engine adapted from Cosmeredle Unlimited (comparison ideas from the original CC0 Cosmeredle).
  * ========================================================= */
 
 const SHY = "\u00ad";
 const clean = (s) => s.replaceAll(SHY, "");
 
-const BOOKS = [
-  "Philosopher's Stone",
-  "Chamber of Secrets",
-  "Prisoner of Azkaban",
-  "Goblet of Fire",
-  "Order of the Phoenix",
-  "Half-Blood Prince",
-  "Deathly Hallows",
-];
-const bookTitle = (n) => BOOKS[n - 1] || `Book ${n}`;
+// Films and shows in release order, from tools/titles.json: [title, phase].
+const RELEASES = window.RELEASES;
+const ORDER = new Map(RELEASES.map(([t], i) => [t, i]));
+const phaseOf = (title) => RELEASES[ORDER.get(title)]?.[1] ?? 0;
 
 function prepare(c, id, extra = {}) {
   return {
     ...c,
     ...extra,
     id,
+    order: ORDER.get(c.debut) ?? 999,
+    phase: phaseOf(c.debut),
     display: c.name.join(" "),
     plain: clean(c.name.join(" ")),
-    series: bookTitle(c.book),
+    series: `Phase ${phaseOf(c.debut)}`,
   };
 }
 
 const CHARACTERS = window.CHARACTERS.map((c, id) => prepare(c, id));
 
-// The spoiler filter is by first book, listed in reading order.
-const SERIES = BOOKS.filter((b) => CHARACTERS.some((c) => c.series === b));
+// The spoiler filter is by the phase of a character's debut.
+const SERIES = [...new Set(CHARACTERS.map((c) => c.series))].sort();
 function countIn(series) {
   return CHARACTERS.filter((c) => c.series === series).length;
 }
@@ -51,44 +47,45 @@ function fuzzyCompareArray(a, b) {
   return matching === 0 ? "None" : matching === big.length ? "Full" : "Partial";
 }
 
-// Titles like "Mr." or "Sr." don't count as a shared name.
 const TITLES = new Set(["mr.", "mrs.", "madam", "monsieur", "sir", "professor", "sr.", "jr.", "aunt"]);
 function compareName(a, b) {
   const norm = (n) => n.map((p) => p.replaceAll(/[()]/g, "")).filter((p) => !TITLES.has(p.toLowerCase()));
   return fuzzyCompareArray(norm(a), norm(b));
 }
 
-// Blood status: [species, status], e.g. ["Human", "Half-blood"] or ["House-elf"].
-function compareBlood(a, b) {
+// Species: [species, subtype], e.g. ["Human", "Enhanced"] or ["Asgardian"].
+function compareSpecies(a, b) {
   const speciesMatches = a[0] === b[0];
-  const statusMatches = a[1] === b[1];
-  if (speciesMatches && statusMatches) return "Full";
-  if (speciesMatches || (statusMatches && a[1] !== undefined && a[1] !== "Unknown")) return "Partial";
+  const subMatches = a[1] === b[1];
+  if (speciesMatches && subMatches) return "Full";
+  if (speciesMatches || (subMatches && a[1] !== undefined)) return "Partial";
   return "None";
 }
 
 function compare(guess, target) {
   return [
     compareName(guess.name, target.name),
-    guess.house === target.house ? "Full" : "None",
-    guess.book === target.book ? "Full" : "None",
-    compareBlood(guess.blood, target.blood),
+    guess.debut === target.debut ? "Full" : "None",
+    guess.phase === target.phase ? "Full" : "None",
     fuzzyCompareArray(guess.affiliation, target.affiliation),
-    fuzzyCompareArray(guess.family, target.family),
+    compareSpecies(guess.species, target.species),
+    guess.gender === target.gender ? "Full" : "None",
+    guess.role === target.role ? "Full" : "None",
+    guess.status === target.status ? "Full" : "None",
   ];
 }
 
-const formatBlood = (s) => (s.length > 1 ? `${s[0]} (${s.slice(1).join(" ")})` : s[0]);
+const formatSpecies = (s) => (s.length > 1 ? `${s[0]} (${s.slice(1).join(" ")})` : s[0]);
 const listOrDash = (a) => (a && a.length ? a.join(", ") : "—");
-// Arrow on a missed book: ▲ means the answer appears later, ▼ earlier.
-const bookArrow = (guess, target) => (guess.book === target.book ? "" : guess.book < target.book ? " ▲" : " ▼");
+// Arrows on a miss: ▲ means the answer came out later, ▼ earlier.
+const arrow = (g, t) => (g === t ? "" : g < t ? " ▲" : " ▼");
 
 /* ---------------- storage ---------------- */
 
 const store = {
   get(key, fallback) {
     try {
-      const v = localStorage.getItem("pu:" + key);
+      const v = localStorage.getItem("mu:" + key);
       return v === null ? fallback : JSON.parse(v);
     } catch {
       return fallback;
@@ -96,7 +93,7 @@ const store = {
   },
   set(key, value) {
     try {
-      localStorage.setItem("pu:" + key, JSON.stringify(value));
+      localStorage.setItem("mu:" + key, JSON.stringify(value));
     } catch {}
   },
 };
@@ -269,11 +266,13 @@ function buildRow(id, animate) {
   const target = CHARACTERS[game.target];
   const values = [
     c.display,
-    c.house || "—",
-    [bookTitle(c.book), `Book ${c.book}${bookArrow(c, target)}`],
-    formatBlood(c.blood),
+    [c.debut, arrow(c.order, target.order).trim()],
+    `${c.phase}${arrow(c.phase, target.phase)}`,
     listOrDash(c.affiliation),
-    listOrDash(c.family),
+    formatSpecies(c.species),
+    c.gender,
+    c.role,
+    c.status,
   ];
   const row = el("div", { class: "row" + (animate ? "" : " revealed") });
   values.forEach((v, i) => {
@@ -305,7 +304,7 @@ function updateChrome() {
   $("#streak").textContent = stats.streak;
   $("#empty").hidden = game.guesses.length > 0;
   input.disabled = game.over;
-  input.placeholder = game.over ? "Round over. Start a new character →" : "Guess a Harry Potter character…";
+  input.placeholder = game.over ? "Round over. Start a new character →" : "Guess an MCU character…";
   $("#btn-giveup").disabled = game.over;
   $("#btn-new").textContent = game.over ? "Next character" : "New character";
   document.body.classList.toggle("cb", settings.colorblind);
@@ -322,11 +321,13 @@ function showEnd() {
   const facts = $("#end-facts");
   facts.replaceChildren();
   for (const [k, v] of [
-    ["House", t.house || "—"],
-    ["First book", `${t.book}. ${bookTitle(t.book)}`],
-    ["Blood status", formatBlood(t.blood)],
+    ["Debut", t.debut],
+    ["Phase", String(t.phase)],
     ["Affiliation", listOrDash(t.affiliation)],
-    ["Family", listOrDash(t.family)],
+    ["Species", formatSpecies(t.species)],
+    ["Gender", t.gender],
+    ["Role", t.role],
+    ["Status", t.status],
   ]) facts.append(el("dt", {}, k), el("dd", {}, v));
   $("#end-line").textContent = game.won
     ? `Solved in ${n} ${n === 1 ? "guess" : "guesses"}. Streak: ${stats.streak}.`
@@ -387,7 +388,7 @@ function renderSuggestions() {
         "li",
         { role: "option", id: `opt-${i}`, "aria-selected": String(i === active) },
         el("span", {}, highlight(c.display, q)),
-        el("small", {}, c.house || ""),
+        el("small", {}, c.debut),
       );
       li.addEventListener("mousedown", (e) => {
         e.preventDefault();
@@ -626,7 +627,7 @@ function initUpdates() {
 
 /* ---------------- cloud sync (private GitHub Gist) ---------------- */
 
-const SYNC_FILE = "potterdle-sync.json";
+const SYNC_FILE = "mcudle-sync.json";
 const sync = {
   token: store.get("syncToken", null),
   gist: store.get("syncGist", null),
@@ -682,7 +683,7 @@ async function findOrCreateGist() {
   const created = await gh("/gists", {
     method: "POST",
     body: JSON.stringify({
-      description: "Potterdle Unlimited sync data",
+      description: "MCU-dle Unlimited sync data",
       public: false,
       files: { [SYNC_FILE]: { content: JSON.stringify(snapshot()) } },
     }),

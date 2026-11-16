@@ -1,9 +1,9 @@
 {
-  "name": "Potterdle Unlimited",
-  "short_name": "Potterdle",
+  "name": "MCU-dle Unlimited",
+  "short_name": "MCU-dle",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0f1424",
-  "theme_color": "#0f1424",
+  "background_color": "#121318",
+  "theme_color": "#121318",
   "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
 }
