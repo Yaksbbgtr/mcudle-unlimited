@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f0e1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1424" media="(prefers-color-scheme: dark)">
+  <title>Potterdle Unlimited</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Potterdle">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap">
+  <link rel="stylesheet" href="style.css?v=2026111601">
+</head>
+<body>
+  <header class="top">
+    <div class="top-left">
+      <button class="icon-btn" id="btn-help" aria-label="How to play" title="How to play">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+      </button>
+    </div>
+    <div class="brand">
+      <h1>Potterdle</h1>
+      <p class="tag">Unlimited</p>
+    </div>
+    <div class="top-right">
+      <button class="sync-dot" id="sync-dot" hidden aria-label="Cloud sync status"></button>
+      <button class="icon-btn" id="btn-stats" aria-label="Statistics" title="Statistics">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 20V10h3v10H4Zm6.5 0V4h3v16h-3ZM17 20v-7h3v7h-3Z"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-settings" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4L10.6 6a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="status" aria-live="polite">
+      <div class="pill"><span class="pill-label">Round</span><span id="round-num">1</span></div>
+      <div class="pill"><span class="pill-label">Guesses</span><span id="guess-count">0</span></div>
+      <div class="pill"><span class="pill-label">Streak</span><span id="streak">0</span></div>
+    </section>
+
+    <section class="guess-box">
+      <div class="combo">
+        <input id="guess-input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="Guess a Harry Potter character…" aria-label="Guess a character"
+               role="combobox" aria-expanded="false" aria-controls="suggestions" aria-autocomplete="list">
+        <ul id="suggestions" role="listbox" hidden></ul>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="btn-giveup">Give up</button>
+        <button class="btn primary" id="btn-new">New character</button>
+      </div>
+    </section>
+
+    <section class="board" aria-label="Your guesses">
+      <div class="board-head">
+        <span>Character</span><span>House</span><span>First book</span><span>Blood status</span><span>Affiliation</span><span>Family</span>
+      </div>
+      <div id="rows"></div>
+      <p class="empty" id="empty">Pick any character to start. Each guess shows how close you are.</p>
+    </section>
+  </main>
+
+  <!-- How to play -->
+  <dialog id="dlg-help">
+    <form method="dialog" class="dlg">
+      <h2>How to play</h2>
+      <p>A random character from the Harry Potter books has been chosen. Guess anyone, and each column tells you how close you are. Play as many rounds as you like.</p>
+      <ul class="legend">
+        <li><span class="sw full"></span><b>Match.</b> That attribute is exactly right.</li>
+        <li><span class="sw partial"></span><b>Close.</b> Some overlap: a shared name, affiliation or family, or the same species but a different blood status.</li>
+        <li><span class="sw none"></span><b>Miss.</b> Nothing in common. On a missed first book, ▲ means the answer first appears later and ▼ earlier.</li>
+      </ul>
+      <p class="muted">Tip: in Settings you can pick which books the mystery character can first appear in, so you avoid spoilers for books you haven't read.</p>
+      <button class="btn primary" value="close">Got it</button>
+    </form>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="dlg-settings">
+    <form method="dialog" class="dlg">
+      <h2>Settings</h2>
+      <h3>Mystery character comes from</h3>
+      <div id="series-list" class="checks"></div>
+      <p class="muted small">You can still guess any character. This only limits who the answer can be. If the current character is from a book you turn off, you get a new one when you close Settings.</p>
+      <h3>Display</h3>
+      <label class="switch"><span>Theme</span><select id="opt-theme"><option value="system">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label class="switch"><span>High-contrast colors</span><input type="checkbox" id="opt-cb"></label>
+      <label class="switch"><span>Reduce animations</span><input type="checkbox" id="opt-motion"></label>
+      <h3>App version</h3>
+      <div class="version-row">
+        <span class="small muted">Version <span id="app-version"></span></span>
+        <button type="button" class="btn ghost small-btn" id="btn-check-update">Check for updates</button>
+      </div>
+      <p id="update-msg" class="small"></p>
+      <h3>Cloud sync</h3>
+      <div id="sync-off">
+        <p class="small muted">Keep your stats, added characters, settings and current round the same on every browser. Your data is saved in a private gist on your GitHub account.</p>
+        <ol class="small steps">
+          <li><a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Potterdle%20sync" target="_blank" rel="noopener">Create a GitHub token</a> with only the <b>gist</b> box ticked. Set Expiration to “No expiration” so it keeps working.</li>
+          <li>Paste it below. Do this once on each device.</li>
+        </ol>
+        <div class="url-row">
+          <input id="sync-token" type="password" autocomplete="off" placeholder="ghp_…" aria-label="GitHub token">
+          <button type="button" class="btn primary" id="btn-sync-connect">Connect</button>
+        </div>
+        <p id="sync-msg" class="small status-warn"></p>
+      </div>
+      <div id="sync-on" hidden>
+        <p id="sync-status" class="small"></p>
+        <div class="sync-btns">
+          <button type="button" class="btn ghost small-btn" id="btn-sync-now">Sync now</button>
+          <button type="button" class="btn ghost small-btn" id="btn-sync-off">Disconnect</button>
+        </div>
+      </div>
+      <div class="dlg-foot">
+        <button class="btn ghost" type="button" id="btn-reset-stats">Reset stats</button>
+        <button class="btn primary" value="close">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="update-bar" id="update-bar" hidden role="status">
+    <span>A new version is available.</span>
+    <button type="button" class="btn primary small-btn" id="btn-update">Update</button>
+  </div>
+
+  <!-- Stats -->
+  <dialog id="dlg-stats">
+    <form method="dialog" class="dlg">
+      <h2>Statistics</h2>
+      <div class="stat-grid" id="stat-grid"></div>
+      <h3>Guesses to solve</h3>
+      <div id="dist" class="dist"></div>
+      <button class="btn primary" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <!-- Round over -->
+  <dialog id="dlg-end">
+    <form method="dialog" class="dlg end">
+      <p class="end-kicker" id="end-kicker"></p>
+      <h2 id="end-name"></h2>
+      <dl class="facts" id="end-facts"></dl>
+      <p class="muted" id="end-line"></p>
+      <div class="dlg-foot">
+        <button class="btn ghost" value="close">View board</button>
+        <button class="btn primary" value="next" id="btn-next" autofocus>Next character →</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="characters.js?v=2026111601"></script>
+  <script src="app.js?v=2026111601"></script>
+</body>
+</html>
