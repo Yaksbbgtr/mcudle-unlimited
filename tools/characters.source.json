@@ -12,7 +12,7 @@
 	{"name": ["Sirius", "Black", "(Padfoot)"], "house": "Gryffindor", "book": 3, "blood": ["Human", "Pure-blood"], "affiliation": ["Order of the Phoenix", "Marauders"], "family": ["Black"]},
 	{"name": ["James", "Potter", "(Prongs)"], "house": "Gryffindor", "book": 4, "blood": ["Human", "Pure-blood"], "affiliation": ["Order of the Phoenix", "Marauders", "Quidditch"], "family": ["Potter"]},
 	{"name": ["Lily", "Potter", "(Evans)"], "house": "Gryffindor", "book": 4, "blood": ["Human", "Muggle-born"], "affiliation": ["Order of the Phoenix"], "family": ["Potter", "Evans"]},
-	{"name": ["Peter", "Pettigrew", "(Wormtail)"], "house": "Gryffindor", "book": 1, "blood": ["Human", "Unknown"], "affiliation": ["Death Eater", "Marauders"], "family": ["Pettigrew"]},
+	{"name": ["Peter", "Pettigrew", "(Wormtail)"], "house": "Gryffindor", "book": 3, "blood": ["Human", "Unknown"], "affiliation": ["Death Eater", "Marauders"], "family": ["Pettigrew"]},
 	{"name": ["Minerva", "McGonagall"], "house": "Gryffindor", "book": 1, "blood": ["Human", "Half-blood"], "affiliation": ["Hogwarts Staff", "Order of the Phoenix"], "family": ["McGonagall"]},
 	{"name": ["Gregory", "Goyle"], "house": "Slytherin", "book": 1, "blood": ["Human", "Pure-blood"], "affiliation": ["Inquisitorial Squad"], "family": ["Goyle"]},
 	{"name": ["Vincent", "Crabbe"], "house": "Slytherin", "book": 1, "blood": ["Human", "Pure-blood"], "affiliation": ["Inquisitorial Squad"], "family": ["Crabbe"]},
