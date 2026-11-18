@@ -3,7 +3,7 @@
   "short_name": "MCU-dle",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#121318",
-  "theme_color": "#121318",
+  "background_color": "#0d0d10",
+  "theme_color": "#0d0d10",
   "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
 }
